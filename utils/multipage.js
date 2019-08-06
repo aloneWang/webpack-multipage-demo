@@ -1,10 +1,11 @@
 /**
  * @description: 多页面获取相关文件
  */
-let path = require('path')
-let fs = require("fs")
-let glob = require('glob')
-let merge = require('webpack-merge')
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const path = require('path')
+const fs = require("fs")
+const glob = require('glob')
+const merge = require('webpack-merge')
 
 const PAGE_PATH = path.resolve(__dirname, '../src/pages')
 
@@ -12,7 +13,7 @@ const PAGE_PATH = path.resolve(__dirname, '../src/pages')
  * @description: 获取多页面入口文件 
  * @returns 入口文件集合
  */
-export const  getEntries = ()  => {
+const  getEntries = ()  => {
     let result = fs.readdirSync(PAGE_PATH);
     let entry = {};
     result.forEach(item => {
@@ -25,12 +26,12 @@ export const  getEntries = ()  => {
  * @description: 获取多页面html模板集合
  * @return: html集合
  */
-export const getHtml = () => {
+const getHtml = () => {
     let htmlList = []
     let files = fs.readdirSync(PAGE_PATH);
-    files.forEach(filename)=> {
+    files.forEach((filename)=> {
         let templatePath;
-        let selfTemplatePath = pagesDirPath + `/${item}/index.html`;
+        let selfTemplatePath = PAGE_PATH + `/${filename}/index.html`;
         let publicTemplatePath = path.resolve(__dirname, "../src/public/index.html")
         try {
             fs.accessSync(selfTemplatePath);
@@ -55,7 +56,12 @@ export const getHtml = () => {
                 }
             })
         }
-        return htmlList.push(new HtmlWebpackPlugin(conf))
+        htmlList.push(new HtmlWebpackPlugin(conf))
     })
+    return htmlList
 }
 
+module.exports = {
+    getEntries,
+    getHtml
+}

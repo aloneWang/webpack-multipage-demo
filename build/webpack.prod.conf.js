@@ -1,8 +1,6 @@
-const merge = require("webpack-merge")
-const webpack = require('webpack')
-const path = require('path')
-import webpackconfig  from './webpack.base.conf'
-export default = merge(webpackconfig, {
+const merge = require("webpack-merge");
+const baseConfig = require("./webpack.base.conf.js");
+module.exports = merge(baseConfig, {
     optimization: {
         runtimeChunk: {
             name: "manifest"
@@ -18,4 +16,4 @@ export default = merge(webpackconfig, {
             }
         }
     }
-})
+});
