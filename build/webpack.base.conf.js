@@ -1,19 +1,19 @@
 const path = require('path')
 const utils = require('../utils/multipage')
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const resolve = (name)=>{
     return path.resolve(__dirname, '..', name)
 }
-
-let DevMode = process.env.NODE_ENV === 'development' ? true : false
+let mode = process.env.NODE_ENV
+let DevMode = mode === 'development' ? true : false
 module.exports = {
+    mode,
     entry: utils.getEntries(),
     output: {
         path: resolve('dist'),
-        filename: DevMode ? '[name].js' : 'statics/js/[name]-[hash:7].js',
+        filename: DevMode ? '[name].js' : 'statics/js/[name].[chunkhash:7].js',
         publicPath: DevMode ? '' : ''
     },
     module:{
@@ -39,7 +39,7 @@ module.exports = {
                 loader: 'file-loader',
                 options: {
                     limit: 10000,
-                    name: DevMode ? '[name].[ext]' : 'statics/img/[name]-[hash:7].[ext]'
+                    name: DevMode ? '[name].[ext]' : 'statics/img/[name].[hash:7].[ext]'
                 }
             },
             {
@@ -47,7 +47,7 @@ module.exports = {
                 loader: 'file-loader',
                 options: {
                     limit: 10000,
-                    name: DevMode ? '[name].[ext]' : 'statics/fonts/[name]-[hash:7].[ext]'
+                    name: DevMode ? '[name].[ext]' : 'statics/fonts/[name].[hash:7].[ext]'
                 }
             }
         ]
@@ -61,11 +61,10 @@ module.exports = {
     },
     plugins:[
         ...utils.getHtml(),  // 多页面html 模板集合
-        new CleanWebpackPlugin(), // 清除打包文件
         // 分离 css ,相比 ExtractTextPlugin 目前 不支持 webpack4
         new MiniCssExtractPlugin({
-            filename: DevMode ? '[name].css' : 'statics/css/[name]-[hash:7].css',
-            chunkFilename: '[id].css',
+            filename: DevMode ? '[name].css' : 'statics/css/[name].[hash:7].css',
+            chunkFilename: DevMode ? "[id].css" : "statics/css/[id].[hash:7].css"
           }),
         new VueLoaderPlugin()  // vue-loader 依赖
     ]
