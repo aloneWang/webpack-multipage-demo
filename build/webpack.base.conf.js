@@ -1,75 +1,72 @@
-const fs = require("fs");
-const path = require("path");
-const VueLoader = require("vue-loader/lib/plugin");
-const HtmlWebpackPlugin = require("html-webpack-plugin");
-const CleanWebpackPlugin = require("clean-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
+const path = require('path')
 const utils = require('../utils/multipage')
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-const mode = process.env.NODE_ENV;
-const devMode = process.env.NODE_ENV === "development";
+const resolve = (name)=>{
+    return path.resolve(__dirname, '..', name)
+}
 
-const pagesDirPath = path.resolve(__dirname, "../src/pages");
-
+let DevMode = process.env.NODE_ENV === 'development' ? true : false
 module.exports = {
-    mode,
     entry: utils.getEntries(),
-    // entry: path.resolve(__dirname, "../src/pages/P1/index.js"),
-    // entry: "./src/index.js",
     output: {
-        publicPath: devMode ? "" : "/",
-        filename: devMode ? "[name].js" : "static/js/[name].[chunkhash].js",
-        path: path.resolve(__dirname, "../dist")
+        path: resolve('dist'),
+        filename: DevMode ? '[name].js' : 'statics/js/[name]-[hash:7].js',
+        publicPath: DevMode ? '' : ''
     },
-    module: {
-        rules: [
+    module:{
+        rules:[
+            {
+                test: /\.(le|c)ss$/,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'less-loader'
+                ]
+            },
             {
                 test: /\.js$/,
-                use: "babel-loader"
+                loader: 'babel-loader'
             },
             {
                 test: /\.vue$/,
-                use: "vue-loader"
+                loader: 'vue-loader'
             },
-            // {
-            //     test: /\.(sc|sa|c)ss$/,
-            //     use: [
-            //         devMode ? "style-loader" : MiniCssExtractPlugin.loader,
-            //         "css-loader", 
-            //         "sass-loader"
-            //     ]
-            // },
-            // {
-            //     test: /\.(png|jpg|gif)$/i,
-            //     use: [
-            //         {
-            //             loader: "file-loader",
-            //             options: {
-            //                 limit: 8192,
-            //                 name: devMode ? "[name].[hash:8].[ext]" : "static/images/[name].[hash:8].[ext]",
-            //                 // publicPath: "/static/"
-            //             }
-            //         }
-            //     ]
-            // }
+            {
+                test: /\.(png|jpg|gif|svg)$/,
+                loader: 'file-loader',
+                options: {
+                    limit: 10000,
+                    name: DevMode ? '[name].[ext]' : 'statics/img/[name]-[hash:7].[ext]'
+                }
+            },
+            {
+                test: /\.(woff|woff2|eot|ttf|otf)$/,
+                loader: 'file-loader',
+                options: {
+                    limit: 10000,
+                    name: DevMode ? '[name].[ext]' : 'statics/fonts/[name]-[hash:7].[ext]'
+                }
+            }
         ]
     },
-    plugins: [
-        new VueLoader(),
+    resolve:{
+        extensions:['.vue','.js','.css'],
+        alias: {
+            'components': resolve('src/components'),
+            'assets': resolve('src/assets')
+        }
+    },
+    plugins:[
+        ...utils.getHtml(),  // 多页面html 模板集合
+        new CleanWebpackPlugin(), // 清除打包文件
+        // 分离 css ,相比 ExtractTextPlugin 目前 不支持 webpack4
         new MiniCssExtractPlugin({
-            filename: devMode ? "[name].css" : "static/css/[name].[hash].css",
-            chunkFilename: devMode ? "[id].css" : "static/css/[id].[hash].css"
-        }),
-        // new CleanWebpackPlugin(path.resolve(__dirname, "../dist")),
-        ...utils.getHtml(),
-        new CopyWebpackPlugin([{
-            from: path.resolve(__dirname, "../src/public/static"),
-            to: path.resolve(__dirname, "../dist/static")
-        }])
-        // new HtmlWebpackPlugin()
-    ],
-    resolve: {
-        extensions: [".js", ".vue"]
-    }
+            filename: DevMode ? '[name].css' : 'statics/css/[name]-[hash:7].css',
+            chunkFilename: '[id].css',
+          }),
+        new VueLoaderPlugin()  // vue-loader 依赖
+    ]
 }
