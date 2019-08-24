@@ -8,13 +8,14 @@ const resolve = (name)=>{
 }
 let mode = process.env.NODE_ENV
 let DevMode = mode === 'development' ? true : false
+console.log("这是"+mode+'环境')
 module.exports = {
     mode,
     entry: utils.getEntries(),
     output: {
         path: resolve('dist'),
         filename: DevMode ? '[name].js' : 'statics/js/[name].[chunkhash:7].js',
-        publicPath: DevMode ? '' : ''
+        publicPath: DevMode ? '' : '' // 静态资源绝对路径前缀
     },
     module:{
         rules:[

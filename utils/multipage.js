@@ -8,7 +8,8 @@ const glob = require('glob')
 const merge = require('webpack-merge')
 
 const PAGE_PATH = path.resolve(__dirname, '../src/pages')
-
+let mode = process.env.NODE_ENV
+let DevMode = mode === 'development' ? true : false
 /**
  * @description: 获取多页面入口文件 
  * @returns 入口文件集合
@@ -39,14 +40,16 @@ const getHtml = () => {
         } catch(err) {
             templatePath = publicTemplatePath;
         }
+
         //  模板配置选项
         let conf = {
             template: templatePath,
-            filename: filename+ '.html',
+            filename: filename+'.html' ,
             // 页面模板需要加对应的js脚本，如果不加这行则每个页面都会引入所有的js脚本
             chunks: ['manifest', 'vendor', filename],
             inject: true
         }
+        console.log(conf)
         if(process.env.NODE_PATH === 'production') {
             let conf = merge(conf, {
                 minify: {

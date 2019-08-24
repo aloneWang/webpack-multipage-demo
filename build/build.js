@@ -21,8 +21,4 @@ webpack(webpackConfig, function (err, stats) {
   }) + '\n\n')
 
   console.log(chalk.cyan(' 编译完成.\n'))
-  console.log(chalk.yellow(
-    '  提示：请将编译包放置在服务器上.\n' +
-    '  用文件路径打开无效.\n'
-  ))
 })

@@ -7,7 +7,8 @@ module.exports = merge(baseConfig, {
     devServer: {
         port: 8086,
         host: "localhost",
-        hot: true
+        hot: true,
+        contentBase: __dirname+ '../src' // 开发环境上下文，
     },
     plugins:[
         new webpack.NamedModulesPlugin(),
