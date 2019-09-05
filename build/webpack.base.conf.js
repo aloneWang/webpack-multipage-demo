@@ -37,7 +37,7 @@ module.exports = {
             },
             {
                 test: /\.(png|jpg|gif|svg)$/,
-                loader: 'file-loader',
+                loader: 'url-loader',
                 options: {
                     limit: 10000,
                     name: DevMode ? '[name].[ext]' : 'statics/img/[name].[hash:7].[ext]'
